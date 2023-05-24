@@ -89,20 +89,80 @@ const menuList = [
 return `<button class="filter-btn" type="button" data-id=  >  </button>`
 */
 const sectionCenter = document.querySelector(".menu-wrap-section");
-const filterBtns = document.querySelectorAll(".filter-btn");
 const btnContainer = document.querySelector(".btn-container");
+
 window.addEventListener("DOMContentLoaded", function () {
-    displayMenuItems(menuList);
-    displayMenuButtons();
-    
+  displayMenuItems(menuList);
+  displayMenuButtons();
 });
 
-  function displayMenuItems(menuItems)
-  {
-    
-  }
+function displayMenuItems(menuItems) {
+  let displayMenu = menuItems.map(function (item) {
+    return `<div class="menu-item-col">
+      <img src=${item.img} alt="${item.title}">
+      <div class="item-info">
+          <header>
+              <h4>${item.title}</h4>
+              <h4 class="price">${item.price}</h4>
+          </header>
+          <p class="item-text">${item.desc}</p>
+      </div>
+    </div>`;
+  });
 
-  function displayMenuButtons()
-  {
-    
+  displayMenu = displayMenu.join("");
+  sectionCenter.innerHTML = displayMenu;
+}
+
+function getRandomHexDigit() {
+  const hexDigits = "0123456789ABCDEF";
+  const randomIndex = Math.floor(Math.random() * hexDigits.length);
+  return hexDigits[randomIndex];
+}
+
+function getRandomHexColor() {
+  let hexColor = "#";
+  for (let i = 0; i < 6; i++) {
+    hexColor += getRandomHexDigit();
   }
+  return hexColor;
+}
+
+let randomHexColor = getRandomHexColor();
+
+function displayMenuButtons() {
+  const categories = menuList.reduce(function (values, item) {
+    if (!values.includes(item.category)) {
+      values.push(item.category);
+    }
+    return values;
+  }, ["all"]);
+
+  const categoryBtns = categories
+    .map(function (itemCategory) {
+      return `<button class="filter-btn" type="button" data-id="${itemCategory}">${itemCategory}</button>`;
+    })
+    .join("");
+
+  btnContainer.innerHTML = categoryBtns;
+
+  const filterBtns = document.querySelectorAll(".filter-btn");
+
+  filterBtns.forEach(function (btn) {
+    btn.addEventListener("click", function (e) {
+      const category = e.currentTarget.dataset.id;
+
+      const menuCategory = menuList.filter(function (menuItem) {
+        if (menuItem.category === category) {
+          return menuItem;
+        }
+      });
+
+      if (category === "all") {
+        displayMenuItems(menuList);
+      } else {
+        displayMenuItems(menuCategory);
+      }
+    });
+  });
+}
